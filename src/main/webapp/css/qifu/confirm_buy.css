@@ -187,7 +187,7 @@
 }
 .product p span:nth-child(1),
 .buyer p span:nth-child(1) {
-	font-size: .26rem;
+	font-size: .28rem;
 	line-height: .56rem !important;
 }
 
@@ -196,6 +196,7 @@
 	width: 74%;
 	text-align: right;
 	height: 0.56rem;
+	font-size: 0.28rem;
 }
 
 .product p span:nth-child(2),
@@ -210,6 +211,7 @@
 	float: right;
 	margin-top: .1rem;
 	text-align: right;
+	font-size: 0.28rem;
 }
 
 .buyer p:last-child textarea {
@@ -217,7 +219,7 @@
 	border: 0;
 	outline: none;
 	resize: none;
-	font-size: .26rem;
+	font-size: .28rem;
 }
 
 .product p:nth-child(2) span:nth-child(2),
@@ -266,7 +268,7 @@
 	float: right;
 	width: 68%;
 	height: .56rem;
-
+	font-size: 0.28rem;
 	text-align: right;
 }
 
@@ -285,6 +287,7 @@
 	background: url(/images/btn_jinru.png) no-repeat right center;
 	background-size: 4%;
 	padding-right: .36rem;
+	font-size: 0.28rem;
 }
 
 .buyer p:nth-child(5) input:nth-child(3) {
@@ -343,11 +346,13 @@ footer p span {
 footer p:nth-child(1) {
 	margin-top: .2rem;
 	margin-bottom: .1rem;
+	font-size: .28rem;
 }
 
 footer p:nth-child(2) {
 	color: #666;
-	font-size: .2rem;
+	font-size: .24rem;
+	line-height: 0.32rem;
 }
 
 footer p:nth-child(2) input {
@@ -366,7 +371,7 @@ footer p:nth-child(2) input {
 
 footer p:nth-child(2) input:checked {
 	background: url(/images/btn_press_tongyi.png) no-repeat center;
-	background-size: 100%;
+	background-size: 100% 100%;
 }
 
 footer p:nth-child(2) a {
