@@ -34,7 +34,7 @@ function layer_tip(form_tip,fun){
 }
 
 function layer_confirm(tip,sure,cancel) {
-    var confirm_box = $('<div class="wrapper"><div class = "confirm_box"><h2>提示</h2><p></p ><div class="btn_box"><button class="sure">取消订单</button><button class="cancel">我再想想</button></div></div></div>')
+    var confirm_box = $('<div class="wrapper"><div class = "confirm_box"><h2>提示</h2><p></p ><div class="btn_box"><button class="sure">确定</button><button class="cancel">我再想想</button></div></div></div>')
     $('body').append(confirm_box);
     $('.wrapper').css({
                           "position":"fixed",
