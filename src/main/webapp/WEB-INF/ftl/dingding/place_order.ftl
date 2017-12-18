@@ -330,6 +330,8 @@
                                                "orderId":result.recordId,
                                                "type":0
                                        }
+
+
                                        $.ajax({
                                           url:"${basePath}/ulb/sku/order/conversation.shtml",
                                           type:"POST",
@@ -354,6 +356,27 @@
                                               console.log(result.message);
                                           }
                                       });
+
+                                       <#--$.ajax({-->
+                                          <#--url:"${basePath}/ulb/sku/order/process.shtml",-->
+                                          <#--type:"POST",-->
+                                          <#--data:JSON.stringify(message),-->
+                                          <#--contentType:"application/json; charset=utf-8",-->
+                                          <#--dataType:"json",-->
+                                          <#--success: function(sendResult){-->
+                                              <#--if(sendResult && sendResult.status== 200){-->
+                                                  <#--alert(1);-->
+                                                  <#--})-->
+
+                                              <#--}else{-->
+                                              <#--}-->
+                                          <#--},-->
+                                          <#--error: function(result){-->
+                                              <#--layer_tip(result.message);-->
+                                              <#--location.href = "${basePath}/dingding/my_order/"+localStorage.dingdingUserId+"/"+localStorage.current_city_code+".shtml?corpId="+localStorage.corpId+"&appid="+localStorage.appId;-->
+                                              <#--console.log(result.message);-->
+                                          <#--}-->
+                                      <#--});-->
 
 
                                        <#--dd.biz.chat.pickConversation({-->

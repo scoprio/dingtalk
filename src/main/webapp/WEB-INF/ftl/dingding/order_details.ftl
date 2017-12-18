@@ -12,9 +12,9 @@
         <title>订单详情</title>
 		<link rel="stylesheet" type="text/css" href="${basePath}/css/qifu/reset_h5.css" />
 		<link rel="stylesheet" type="text/css" href="${basePath}/css/qifu/order_details.css" />
-        <script type="text/javascript" src="http://g.alicdn.com/dingding/open-develop/1.6.9/dingtalk.js"></script>
+        <#--<script type="text/javascript" src="http://g.alicdn.com/dingding/open-develop/1.6.9/dingtalk.js"></script>-->
         <script src="${basePath}/js/qifu/jquery-1.11.3.js" type="text/javascript" charset="utf-8"></script>
-        <script src="${basePath}/js/qifu/dingding_comm.js" type="text/javascript" charset="utf-8"></script>
+        <#--<script src="${basePath}/js/qifu/dingding_comm.js" type="text/javascript" charset="utf-8"></script>-->
 	</head>
 
 	<body>
@@ -60,6 +60,11 @@
 
                 <div class="order_code" style="display: ${order.display?default('none')}">
                     <input type="button" value="取消订单" onclick="cancelOrder(${order.oid?default('0')})" />
+                </div>
+
+                <div class="order_code" style="display: ${order.auditDisplay?default('none')}">
+                    <input type="button" style="float: left;width: 50%;" value="审核通过" onclick="auditYesOrder(${order.oid?default('未设置')},'${order.cityCode?default('')}','${order.employeeid?default('')}','${order.companyCode?default('')}',${order.appId?default('')})" />
+                    <input type="button" style="float: left;width: 50%;" value="审核不通过" onclick="auditNoOrder(${order.oid?default('未设置')},'${order.cityCode?default('')}','${order.employeeid?default('')}','${order.companyCode?default('')}',${order.appId?default('')})" />
                 </div>
 				
 				<!--三联协议-->
@@ -160,6 +165,151 @@
                                }
                            })
                 },function(){});
+
+            }
+
+            function auditYesOrder(orderId,cityCode,uuid,cropid,appid) {
+
+                var skuOrder = {
+                    "id":orderId,
+                    "cityCode":cityCode,
+                    "operater": 2
+                }
+
+                layer_confirm("您确认要审核通过订单吗",function () {
+                    $.ajax({
+                               url:"${basePath}/ulb/sku/order.shtml",
+                               type:"PUT",
+                               data:JSON.stringify(skuOrder),
+                               contentType:"application/json; charset=utf-8",
+                               dataType:"json",
+                               success: function(result){
+                                   if(result && result.status== 200){
+
+
+                                       var message = {
+                                           "uid":uuid,
+                                           "cropId":cropid,
+                                           "appId":appid,
+                                           "cityCode":cityCode,
+                                           "orderId":orderId,
+                                           "type":1
+                                       }
+
+                                       $.ajax({
+                                                  url:"${basePath}/ulb/sku/order/conversation.shtml",
+                                                  type:"POST",
+                                                  data:JSON.stringify(message),
+                                                  contentType:"application/json; charset=utf-8",
+                                                  dataType:"json",
+                                                  success: function(sendResult){
+                                                      if(sendResult && sendResult.status== 200){
+                                                          layer_tip("审核通过,发送通知成功",function () {
+                                                              location.reload();
+                                                          })
+
+                                                      }else{
+                                                          layer_tip("消息发送失败");
+//                                                                          layer_tip(result.message);
+                                                          location.reload();
+                                                      }
+                                                  },
+                                                  error: function(result){
+                                                      layer_tip(result.message);
+                                                      location.reload();
+                                                      console.log(result.message);
+                                                  }
+                                              });
+
+
+                                   }else{
+                                       layer_tip(result.message);
+                                       location.reload();
+                                   }
+                               },
+                               error: function(result){
+                                   layer_tip(result.message);
+                                   location.reload();
+                                   console.log(result.message);
+                               }
+                           })
+                },function () {
+
+                });
+            }
+
+
+            function auditNoOrder(orderId,cityCode,uuid,cropid,appid) {
+
+                layer_promot({
+                     'tip':"不通过理由",
+                     'callback':function(val){
+                         var skuOrder = {
+                             "id":orderId,
+                             "cityCode":cityCode,
+                             "operater": 3,
+                             "reason":val
+                         }
+
+
+                         $.ajax({
+                                    url:"${basePath}/ulb/sku/order.shtml",
+                                    type:"PUT",
+                                    data:JSON.stringify(skuOrder),
+                                    contentType:"application/json; charset=utf-8",
+                                    dataType:"json",
+                                    success: function(result){
+                                        if(result && result.status== 200){
+
+
+                                            var message = {
+                                                "uid":uuid,
+                                                "cropId":cropid,
+                                                "cityCode":cityCode,
+                                                "appId":appid,
+                                                "orderId":orderId,
+                                                "type":1
+                                            }
+                                            $.ajax({
+                                                       url:"${basePath}/ulb/sku/order/conversation.shtml",
+                                                       type:"POST",
+                                                       data:JSON.stringify(message),
+                                                       contentType:"application/json; charset=utf-8",
+                                                       dataType:"json",
+                                                       success: function(sendResult){
+                                                           if(sendResult && sendResult.status== 200){
+                                                               layer_tip("审核不通过，终止订单,发送通知成功",function () {
+                                                                   location.reload();
+                                                               })
+
+                                                           }else{
+                                                               layer_tip("消息发送失败");
+                                                               location.reload();
+                                                           }
+                                                       },
+                                                       error: function(result){
+                                                           layer_tip(result.message);
+                                                           location.reload();
+                                                           console.log(result.message);
+                                                       }
+                                                   });
+
+
+                                        }else{
+                                            layer_tip(result.message);
+                                            location.reload();
+                                        }
+                                    },
+                                    error: function(result){
+                                        layer_tip(result.message);
+                                        location.reload();
+                                        console.log(result.message);
+                                    }
+                                });
+
+                     }
+                 })
+
 
             }
 
