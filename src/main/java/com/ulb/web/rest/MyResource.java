@@ -206,6 +206,71 @@ public class MyResource {
 
     }
 
+
+    @RequestMapping(value="my_admin_order/{corpId}/{cityCode}",method=RequestMethod.GET)
+    public ModelAndView getCropAdminOrders(@PathVariable String corpId,@PathVariable String cityCode,HttpServletRequest request){
+
+        MyOrderRecordDTO myOrderRecordDTO = new MyOrderRecordDTO();
+
+        myOrderRecordDTO.setTitle("公司的订单");
+        myOrderRecordDTO.setFlag("1");
+        myOrderRecordDTO.setConfig(ConfigGetter.getConfig(request));
+
+        List<OrderRecordDTO> list = null;
+        List<OrderRecordDTO> list1 = new ArrayList<>();
+        List<OrderRecordDTO> list2 = new ArrayList<>();
+
+        try {
+            list = myService.getCropSKUOrderRecord(corpId,cityCode);
+            for(OrderRecordDTO dto:list){
+                dto.setCityCode(cityCode);
+                dto.setStatusName(StatueUtil.getStatueName(dto.getPid().toString()));
+                dto.setOnum("wnxg"+dto.getOnum());
+
+
+
+                if(dto.getPid() == 7){
+                    dto.setCommentDisplay("inline-block");
+                }else{
+                    dto.setCommentDisplay("none");
+                }
+
+                if(dto.getPid() == -1){
+                    dto.setAuditDisplay("inline-block");
+                }else{
+                    dto.setAuditDisplay("none");
+                }
+
+
+                if(dto.getPid() == 1 ||dto.getPid() ==2 ||dto.getPid()==3){
+                    dto.setDisplay("inline-block");
+                }else{
+                    dto.setDisplay("none");
+                }
+
+                if(dto.getPid() == 27){
+                    dto.setPayDisplay("inline-block");
+                }else{
+                    dto.setPayDisplay("none");
+                }
+
+
+                if(dto.getPid() == -1){
+                    list1.add(dto);
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        myOrderRecordDTO.setList(list);
+        myOrderRecordDTO.setList1(list1);
+        myOrderRecordDTO.setList2(list2);
+        return new ModelAndView("dingding/my_admin_order","orders",myOrderRecordDTO);
+
+    }
+
     @RequestMapping(value="my_qyd_lists",method=RequestMethod.GET)
     public ModelAndView getQydLists(HttpServletRequest request){
 

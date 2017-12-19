@@ -47,10 +47,6 @@ public class ConfigGetter {
             ticket = AuthHelper.getJsapiTicket(accessToken, corpId);
             signature = AuthHelper.sign(ticket, nonceStr, timeStamp, signedUrl);
             agentid = AuthHelper.getAgentId(corpId, appId);
-//            accessToken = "1111";
-//            ticket = "111";
-//            signature = "111";
-//            agentid = "1111";
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -59,6 +55,7 @@ public class ConfigGetter {
 
         DingDingConfigDTO dto = new DingDingConfigDTO();
 
+        dto.setAccessToken(accessToken);
         dto.setAgentId(agentid);
         dto.setCorpId(corpId);
         dto.setTimeStamp(String.valueOf(timeStamp));

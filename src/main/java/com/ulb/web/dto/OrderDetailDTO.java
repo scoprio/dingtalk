@@ -45,7 +45,14 @@ public class OrderDetailDTO {
 
     private String slDisplay;
 
+    private String auditDisplay;
+
     private List<OrderDataDetailDTO> orderDatas;
+
+
+    private String companyCode;
+
+    private String appId;
 
     public String getAddress() {
         return address;
@@ -279,6 +286,14 @@ public class OrderDetailDTO {
         this.slDisplay = slDisplay;
     }
 
+    public String getAuditDisplay() {
+        return auditDisplay;
+    }
+
+    public void setAuditDisplay(String auditDisplay) {
+        this.auditDisplay = auditDisplay;
+    }
+
     public String getCostString() {
         return costString;
     }
@@ -301,5 +316,21 @@ public class OrderDetailDTO {
 
     public void setSurchargeString(String surchargeString) {
         this.surchargeString = surchargeString;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getCompanyCode() {
+        return companyCode;
+    }
+
+    public void setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
     }
 }

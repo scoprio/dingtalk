@@ -19,6 +19,8 @@ public class DingDingConfigDTO {
 
     private String appid;
 
+    private String accessToken;
+
 
     public String getJsticket() {
         return jsticket;
@@ -76,4 +78,11 @@ public class DingDingConfigDTO {
         this.appid = appid;
     }
 
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 }

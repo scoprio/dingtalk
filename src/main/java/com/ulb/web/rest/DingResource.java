@@ -17,7 +17,9 @@ import com.ulb.web.demo.auth.AuthHelper;
 import com.ulb.web.demo.user.UserHelper;
 import com.ulb.web.dto.Comment2DTO;
 import com.ulb.web.dto.Comment2InfoDTO;
+import com.ulb.web.dto.CropInfoDTO;
 import com.ulb.web.dto.DingDingConfigDTO;
+import com.ulb.web.dto.ProcessDTO;
 import com.ulb.web.dto.QydInfoDTO;
 import com.ulb.web.util.AlipayInfoGetter;
 import com.ulb.web.util.ConfigGetter;
@@ -51,6 +53,10 @@ public class DingResource {
     @RequestMapping(value="index",method=RequestMethod.GET)
     public ModelAndView userIndex(HttpServletRequest request){
         DingDingConfigDTO dto = ConfigGetter.getConfig(request);
+//        ProcessDTO processDTO = new ProcessDTO();
+//        processDTO.setAgentid(dto.getAgentId());
+//        processDTO.setAccessToken(dto.getAccessToken());
+//        AuthHelper.copyProcess(processDTO);
         return new ModelAndView("dingding/index","_config",dto);
     }
 
@@ -82,6 +88,20 @@ public class DingResource {
             accessToken = AuthHelper.getAccessToken(corpId);
             LOGGER.info("access token:"+accessToken);
             user = UserHelper.getUser(accessToken, UserHelper.getUserInfo(accessToken, code).getUserid());
+//            String userId = user.getUserid();
+//            Long deptId = user.getDepartment().get(0);
+//            String agentid = AuthHelper.getAgentId(corpId, "4198");
+//
+//            ProcessDTO processDTO = new ProcessDTO();
+//
+//            processDTO.setUid(userId);
+//            processDTO.setDetpid(deptId);
+//            processDTO.setAccessToken(accessToken);
+//            processDTO.setAgentid(processDTO.getAgentid());
+//            processDTO.setAgentid(agentid);
+//
+//            AuthHelper.createProcess(processDTO);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

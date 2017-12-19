@@ -3,28 +3,34 @@ package com.ulb.web.demo.auth;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-import javax.servlet.http.HttpServletRequest;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.dingtalk.api.DefaultDingTalkClient;
+import com.dingtalk.api.DingTalkClient;
+import com.dingtalk.api.request.SmartworkBpmsProcessCopyRequest;
+import com.dingtalk.api.request.SmartworkBpmsProcessSyncRequest;
+import com.dingtalk.api.request.SmartworkBpmsProcessinstanceCreateRequest;
+import com.dingtalk.api.response.SmartworkBpmsProcessCopyResponse;
+import com.dingtalk.api.response.SmartworkBpmsProcessSyncResponse;
+import com.dingtalk.api.response.SmartworkBpmsProcessinstanceCreateResponse;
 import com.dingtalk.open.client.ServiceFactory;
 import com.dingtalk.open.client.api.model.corp.CorpUserDetail;
 import com.dingtalk.open.client.api.model.corp.JsapiTicket;
 import com.dingtalk.open.client.api.model.isv.CorpAuthToken;
 import com.dingtalk.open.client.api.service.corp.JsapiService;
 import com.dingtalk.open.client.api.service.isv.IsvService;
+import com.taobao.api.ApiException;
 import com.ulb.service.generator.APIServiceGenrator;
 import com.ulb.service.remote.RemoteDDService;
 import com.ulb.web.demo.Env;
@@ -34,6 +40,7 @@ import com.ulb.web.demo.user.UserHelper;
 import com.ulb.web.demo.utils.FileUtils;
 import com.ulb.web.demo.utils.HttpHelper;
 import com.ulb.web.dto.ConversationDTO;
+import com.ulb.web.dto.CropInfoDTO;
 import com.ulb.web.dto.DDMessageDTO;
 import com.ulb.web.dto.DingAdminDTO;
 import com.ulb.web.dto.DingResultDTO;
@@ -43,7 +50,11 @@ import com.ulb.web.dto.OAMessageBodyDTO;
 import com.ulb.web.dto.OAMessageDTO;
 import com.ulb.web.dto.OAMessageHeadDTO;
 import com.ulb.web.dto.OrderDetailDTO;
+import com.ulb.web.dto.ProcessDTO;
+import com.ulb.web.rest.UlbSKUResource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
 import retrofit2.Call;
@@ -51,8 +62,12 @@ import retrofit2.Response;
 
 public class AuthHelper {
 
+	public static final Logger LOGGER = LoggerFactory.getLogger(AuthHelper.class);
+
 	// public static String jsapiTicket = null;
 	// public static String accessToken = null;
+
+	public static String URL = "http://wnxgtest.hz.taeapp.com";
 	public static Timer timer = null;
 	// 调整到1小时50分钟
 	public static final long cacheTime = 1000 * 60 * 55 * 2;
@@ -64,7 +79,7 @@ public class AuthHelper {
 	 * 在此方法中，为了避免频繁获取access_token，
 	 * 在距离上一次获取access_token时间在两个小时之内的情况，
 	 * 将直接从持久化存储中读取access_token
-	 * 
+	 *
 	 * 因为access_token和jsapi_ticket的过期时间都是7200秒
 	 * 所以在获取access_token的同时也去获取了jsapi_ticket
 	 * 注：jsapi_ticket是在前端页面JSAPI做权限验证配置的时候需要使用的
@@ -80,9 +95,9 @@ public class AuthHelper {
 			ServiceFactory serviceFactory = ServiceFactory.getInstance();
 
 			IsvService isvService = serviceFactory.getOpenService(IsvService.class);
-			CorpAuthToken corpAuthToken = isvService.getCorpToken((String)FileUtils.getValue("ticket", "suiteToken"), 
+			CorpAuthToken corpAuthToken = isvService.getCorpToken((String)FileUtils.getValue("ticket", "suiteToken"),
 					corpId,(String)FileUtils.getValue("permanentcode", corpId));
-			
+
 			if (corpAuthToken.getAccess_token() != null) {
 				// save accessToken
 				accToken = corpAuthToken.getAccess_token();
@@ -96,14 +111,14 @@ public class AuthHelper {
 			} else {
 				throw new OApiResultException("access_token");
 			}
-			
+
 			if(accToken.length() > 0){
-				
+
 				JsapiService jsapiService = serviceFactory.getOpenService(JsapiService.class);
 
 				JsapiTicket JsapiTicket = jsapiService.getJsapiTicket(accToken, "jsapi");
 				jsTicket = JsapiTicket.getTicket();
-				
+
 				JSONObject jsonTicket = new JSONObject();
 				jsontemp.clear();
 				jsontemp.put("ticket", jsTicket);
@@ -128,13 +143,13 @@ public class AuthHelper {
 		 if (jsTicketValue == null || curTime -
 		 jsTicketValue.getLong("begin_time") >= cacheTime) {
 				ServiceFactory serviceFactory;
-				
+
 			serviceFactory = ServiceFactory.getInstance();
 			JsapiService jsapiService = serviceFactory.getOpenService(JsapiService.class);
 
 			JsapiTicket JsapiTicket = jsapiService.getJsapiTicket(accessToken, "jsapi");
 			jsTicket = JsapiTicket.getTicket();
-			
+
 			JSONObject jsonTicket = new JSONObject();
 			JSONObject jsontemp = new JSONObject();
 			jsontemp.clear();
@@ -207,23 +222,104 @@ public class AuthHelper {
 		return agentId;
 	}
 
+	public static void copyProcess(ProcessDTO processDTO) {
+
+//		String accessToken = null;
+//		String agentid = null;
+//
+//		try {
+//			accessToken = AuthHelper.getAccessToken(processDTO.getCropId());
+//			agentid = AuthHelper.getAgentId(processDTO.getCropId(), processDTO.getAppId());
+//
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
+		DingTalkClient client = new DefaultDingTalkClient("https://eco.taobao.com/router/rest");
+		SmartworkBpmsProcessCopyRequest req = new SmartworkBpmsProcessCopyRequest();
+		req.setAgentId(Long.valueOf(processDTO.getAgentid()));
+		req.setProcessCode("PROC-DLSKY79V-0EHPKOPSMBJO9ZM667HX1-IGNJF69J-3");
+		req.setBizCategoryId("com.ulb");
+		req.setProcessName("万能小哥维修");
+		req.setDescription("适用于万能小哥维修");
+		SmartworkBpmsProcessCopyResponse rsp = null;
+		try {
+			rsp = client.execute(req, processDTO.getAccessToken());
+		} catch (ApiException e) {
+			e.printStackTrace();
+		}
+		LOGGER.info("process-------copy,{}",rsp.getBody());
+	}
 
 
+	public static void createProcess(ProcessDTO processDTO) throws OApiException {
 
+		DingTalkClient client = new DefaultDingTalkClient("https://eco.taobao.com/router/rest");
+		SmartworkBpmsProcessinstanceCreateRequest req = new SmartworkBpmsProcessinstanceCreateRequest();
+		req.setAgentId(Long.valueOf(processDTO.getAgentid()));
+		req.setProcessCode("PROC-DLSKY79V-0EHPKOPSMBJO9ZM667HX1-IGNJF69J-3");
+		req.setOriginatorUserId(processDTO.getUid());
+		req.setDeptId(processDTO.getDetpid());
+		req.setApprovers(getAdmin(processDTO.getAccessToken()));
+		req.setCcPosition("START");
+		List<SmartworkBpmsProcessinstanceCreateRequest.FormComponentValueVo> list2 = new ArrayList();
+		SmartworkBpmsProcessinstanceCreateRequest.FormComponentValueVo obj3 = new SmartworkBpmsProcessinstanceCreateRequest.FormComponentValueVo();
+		obj3.setName("报修地点");
+		obj3.setValue("石家庄国际城2期");
+
+		SmartworkBpmsProcessinstanceCreateRequest.FormComponentValueVo obj4 = new SmartworkBpmsProcessinstanceCreateRequest.FormComponentValueVo();
+		obj4.setName("具体内容");
+		obj4.setValue("石家庄国际城2期");
+		list2.add(obj4);
+		req.setFormComponentValues(list2);
+		SmartworkBpmsProcessinstanceCreateResponse rsp = null;
+		try {
+			rsp = client.execute(req, processDTO.getAccessToken());
+		} catch (ApiException e) {
+			e.printStackTrace();
+		}
+
+		LOGGER.info("process-------create,{}",rsp.getBody());
+		LOGGER.info("process-------create");
+		LOGGER.info("process-------create");
+		LOGGER.info("process-------create");
+		LOGGER.info("process-------create");
+
+	}
+
+	private static String getAdmin(String accessToken){
+
+
+		StringBuffer sbAdmin = new StringBuffer();
+
+		RemoteDDService service = APIServiceGenrator.createRequsetService(RemoteDDService.class,"https://oapi.dingtalk.com");
+		Map<String, String> maps = new HashMap<>();
+		maps.put("access_token",accessToken);
+		Call<DingReturnAdminDTO> call0 = service.getAdmin("/user/get_admin",maps);
+
+		DingReturnAdminDTO dingReturnAdminDTO = null;
+		try {
+			dingReturnAdminDTO = call0.execute().body();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if(dingReturnAdminDTO.getErrcode() == 0){
+			for(DingAdminDTO dingAdminDTO:dingReturnAdminDTO.getAdminList()){
+				if(sbAdmin.length() > 0){
+					sbAdmin.append(",");
+				}
+				sbAdmin.append(dingAdminDTO.getUserid());
+			}
+		}
+
+		return sbAdmin.toString();
+	}
 
 
 	public static int sendToConversation(ConversationDTO conversationDTO,OrderDetailDTO  orderDetailDTO) throws OApiException {
 
-
-//		DingTalkClient client = new DefaultDingTalkClient("https://eco.taobao.com/router/rest");
-//		SmartworkBpmsProcessSyncRequest req = new SmartworkBpmsProcessSyncRequest();
-//		req.setAgentId(41605932L);
-//		req.setSrcProcessCode("PROC-EF6YJL35P2-SCKICSB7P750S0YISYKV3-17IBLGZI-1");
-//		req.setTargetProcessCode("PROC-EF6YJL35P2-SCKICSB7P750S0YISYKV3-17IBLGZI-1");
-//		req.setBizCategoryId("fab.purchase");
-//		req.setProcessName("请假审批");
-//		SmartworkBpmsProcessSyncResponse rsp = client.execute(req, access_token);
-//		System.out.println(rsp.getBody());
 
 		String uid = conversationDTO.getUid();
 		String cid = conversationDTO.getCid();
@@ -311,7 +407,10 @@ public class AuthHelper {
 				oaMessageDTO.setHead(oaMessageHeadDTO);
 				oaMessageDTO.setBody(oaMessageBodyDTO);
 
-				String messageUrl = "dingtalk://dingtalkclient/page/link?url=http%3a%2f%2fwnxgtest.hz.taeapp.com%2fdingding%2findex.shtml%3fcorpid%3d%24CORPID%24%26appid%3d4198&pc_slide=true";
+				String messageUrl = "dingtalk://dingtalkclient/page/link?url="+URL+"/ulb/sku/order/admin/"+conversationDTO.getOrderId()+"/"+conversationDTO.getCityCode()+".shtml&pc_slide=true";
+
+
+				LOGGER.info("DD OA MESSAGEURL"+messageUrl);
 				oaMessageDTO.setMessage_url(messageUrl);
 
 				ddMessageDTO.setTouser(sbAdmin.toString());
@@ -321,6 +420,9 @@ public class AuthHelper {
 				ddMessageDTO.setOa(oaMessageDTO);
 				break;
 			case 1:
+
+
+				LOGGER.info("DD OA MESSAGE RESULT");
 				List<KeyValueDTO> list1 = new ArrayList<>();
 
 				KeyValueDTO keyValueDTO1_1 = new KeyValueDTO("审核结果：","");
@@ -336,7 +438,7 @@ public class AuthHelper {
 					list1.add(keyValueDTO1_1);
 					list1.add(keyValueDTO1_2);
 				}
-
+				LOGGER.info("DD OA MESSAGE RESULT");
 				OAMessageHeadDTO oaMessageHeadDTO1 = new OAMessageHeadDTO("FFBBBBBB","万能小哥维修单审核");
 				OAMessageBodyDTO oaMessageBodyDTO1 = new OAMessageBodyDTO();
 				oaMessageBodyDTO1.setTitle("万能小哥维修单审核");
@@ -345,9 +447,11 @@ public class AuthHelper {
 				oaMessageDTO1.setHead(oaMessageHeadDTO1);
 				oaMessageDTO1.setBody(oaMessageBodyDTO1);
 
-				String messageUrl1 = "dingtalk://dingtalkclient/page/link?url=http%3a%2f%2fwnxgtest.hz.taeapp.com%2fdingding%2findex.shtml%3fcorpid%3d%24CORPID%24%26appid%3d4198&pc_slide=true";
+				String messageUrl1 = "dingtalk://dingtalkclient/page/link?url="+URL+"/ulb/sku/order/admin/"+conversationDTO.getOrderId()+"/"+conversationDTO.getCityCode()+".shtml&pc_slide=true";
 				oaMessageDTO1.setMessage_url(messageUrl1);
 				ddMessageDTO.setTouser(orderDetailDTO.getEmployeeid());
+
+				LOGGER.info("DD OA MESSAGE RESULT TO USER:"+ orderDetailDTO.getEmployeeid());
 				ddMessageDTO.setToparty("");
 				ddMessageDTO.setAgentid(getAgentId(cropId, appId));
 				ddMessageDTO.setMsgtype("oa");

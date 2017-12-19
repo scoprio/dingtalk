@@ -14,15 +14,18 @@ import javax.servlet.http.HttpServletRequest;
 import com.alibaba.druid.support.spring.stat.annotation.Stat;
 import com.ulb.service.SKUService;
 import com.ulb.service.TimeService;
+import com.ulb.web.demo.Env;
 import com.ulb.web.demo.OApiException;
 import com.ulb.web.demo.auth.AuthHelper;
 import com.ulb.web.dto.Comment2DTO;
 import com.ulb.web.dto.CommentDTO;
 import com.ulb.web.dto.ConversationDTO;
+import com.ulb.web.dto.CropInfoDTO;
 import com.ulb.web.dto.OperaterOrderDTO;
 import com.ulb.web.dto.OperaterOrderWithIdDTO;
 import com.ulb.web.dto.OrderDataDetailDTO;
 import com.ulb.web.dto.OrderDetailDTO;
+import com.ulb.web.dto.OrderDetailWithDingDTO;
 import com.ulb.web.dto.PayState2DTO;
 import com.ulb.web.dto.PayStateDTO;
 import com.ulb.web.dto.QFRecordDetailDTO;
@@ -182,6 +185,55 @@ public class UlbSKUResource {
         return new ModelAndView("dingding/order_details","order",orderDetailDTO);
     }
 
+
+    @RequestMapping(value="sku/order/admin/{orderId}/{cityCode}",method=RequestMethod.GET)
+    public ModelAndView getOrderInfo(@PathVariable String orderId,@PathVariable String cityCode){
+
+        OrderDetailDTO  orderDetailDTO = null;
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            orderDetailDTO = skuService.getSKUOrderService(orderId,cityCode);
+
+            orderDetailDTO.setDisplay("none");
+
+            if(orderDetailDTO.getPid() == 7|| orderDetailDTO.getPid() ==8){
+                orderDetailDTO.setSlDisplay("block");
+            }else{
+                orderDetailDTO.setSlDisplay("none");
+            }
+
+            if(StringUtils.isEmpty(orderDetailDTO.getXgName()) || StringUtils.isEmpty(orderDetailDTO.getXgPhone())){
+                orderDetailDTO.setXgDisplay("none");
+
+            }else{
+                orderDetailDTO.setXgDisplay("block");
+            }
+
+
+            if(orderDetailDTO.getPid() == -1){
+                orderDetailDTO.setAuditDisplay("inline-block");
+            }else{
+                orderDetailDTO.setAuditDisplay("none");
+            }
+
+            orderDetailDTO.setOnum("wnxg"+orderDetailDTO.getOnum());
+            for(OrderDataDetailDTO dto:orderDetailDTO.getOrderDatas()){
+                dto.setpName(StatueUtil.getStatueName(dto.getPid().toString()));
+                Date updateDateTime = new Date(dto.getUpdatetime());
+                dto.setUpdateDateTime(sdf.format(updateDateTime));
+            }
+            orderDetailDTO.setCostString(orderDetailDTO.getCost().toString());
+            orderDetailDTO.setCostMaterialString(orderDetailDTO.getCostMaterial().toString());
+            orderDetailDTO.setSurchargeString(orderDetailDTO.getSurcharge().toString());
+            orderDetailDTO.setCityCode(cityCode);
+            orderDetailDTO.setAppId(Env.APP_ID);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ModelAndView("dingding/order_details","order",orderDetailDTO);
+    }
+
     @RequestMapping(value="/sku/comment",method=RequestMethod.GET)
     public ModelAndView getComment(HttpServletRequest request){
         CommentDTO commentDTO = new CommentDTO();
@@ -297,6 +349,39 @@ public class UlbSKUResource {
 
         return new ResponseEntity(resultMap,HttpStatus.OK);
     }
+
+
+//    @RequestMapping(value = "/sku/order/process.shtml",
+//            method = RequestMethod.POST,
+//            produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Map<String, Object>> process(@RequestBody CropInfoDTO cropInfoDTO){
+//        Map<String, Object> resultMap = new LinkedHashMap<>();
+//        int result;
+//
+//        OrderDetailDTO  orderDetailDTO = null;
+//        try {
+//
+//
+//            orderDetailDTO = skuService.getSKUOrderService(cropInfoDTO.getOrderId(),cropInfoDTO.getCityCode());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//            result = 0;
+//
+//            if(result == 0){
+//                resultMap.put("status", 200);
+//                resultMap.put("message", "发送成功！");
+//            }else{
+//                resultMap.put("status", 300);
+//                resultMap.put("message", "发送失败！");
+//
+//            }
+//
+//
+//        return new ResponseEntity(resultMap,HttpStatus.OK);
+//    }
 
 
 }
