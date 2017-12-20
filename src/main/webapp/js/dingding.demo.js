@@ -351,13 +351,16 @@ var openCitys = [
 	}
 ]
 
-function change_url(citycode) {
-	$('.hot_project>ul>li .hot_btn>a').each(function(i,item) {
-		var current_url = $(item).attr('href');
+function change_url(url) {
+	$('.hot_project>ul>li ').each(function(i,item) {
+		var btitem = $(item).find('.hot_btn>a');
+		var imgiten =  $(item).find('.hot_pic>a')
+		var current_url = btitem.attr('href');
 		var url_array = current_url.split('/');
-		url_array[url_array.length-1] = citycode;
-		current_url = url_array.join('/')
-		$(item).attr('href',current_url);
+		url_array[url_array.length-1] = url;
+		current_url = url_array.join('/');
+		btitem.attr('href',current_url);
+		imgiten.attr('href',current_url);
 		console.log(item);
 	})
 }

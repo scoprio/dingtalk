@@ -282,13 +282,28 @@
                     carValue = 1
                 }
                 $('.txt').text(carValue)
-            })
+            });
+
+             window.addEventListener("popstate", function(e) {  
+                     $(".xieyi").hide();
+                       
+             }, false);  
+
+            function pushHistory(){  
+              var state = {  
+                  title: "title",  
+                  url: ""  
+              };  
+              window.history.pushState(state, "title", "#");  
+            }
 
             $('.xieyi_btn').click(function(){
                 $(".xieyi").show();
+                pushHistory()
             })
             $(".close_agree").click(function(){
                 $(".xieyi").hide();
+                window.history.go(-1);
             })
 
             $('.submit_btn').click(function() {
@@ -340,7 +355,7 @@
                                           dataType:"json",
                                           success: function(sendResult){
                                               if(sendResult && sendResult.status== 200){
-                                                  layer_tip("下单消息发送成功",function () {
+                                                  layer_tip("下单申请成功，等待企业管理员审核",function () {
 //                                                               location.reload();
                                                       location.href = "${basePath}/dingding/my_order/"+localStorage.dingdingUserId+"/"+localStorage.current_city_code+".shtml?corpId="+localStorage.corpId+"&appid="+localStorage.appId;
                                                   })

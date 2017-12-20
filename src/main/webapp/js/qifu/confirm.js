@@ -91,13 +91,28 @@ $(function() {
 		}
 	})
 
+     window.addEventListener("popstate", function(e) {  
+             $(".xieyi").hide();
+               
+     }, false);  
+
+    function pushHistory(){  
+      var state = {  
+          title: "title",  
+          url: ""  
+      };  
+      window.history.pushState(state, "title", "#");  
+    }
+
 
 	$('.agreement').click(function(){
 		$(".xieyi").show();
+		pushHistory();
 	})
 	
 	$(".close_agree").click(function() {
 		$(".xieyi").hide();
+		window.history.go(-1);
 	})
 
 	$('#showBank2').click(function() {

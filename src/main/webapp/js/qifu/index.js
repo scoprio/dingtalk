@@ -15,16 +15,21 @@ $(function(){
 
     var page = 0;
 
-    function change_url(citycode) {
-        $('.hot_project>ul>li .hot_btn>a').each(function(i,item) {
-            var current_url = $(item).attr('href');
+    function change_url(url) {
+        $('.hot_project>ul>li ').each(function(i,item) {
+            var btitem = $(item).find('.hot_btn>a');
+            var imgiten =  $(item).find('.hot_pic>a')
+            var current_url = btitem.attr('href');
             var url_array = current_url.split('/');
-            url_array[url_array.length-1] = citycode;
-            current_url = url_array.join('/')
-            $(item).attr('href',current_url);
+            url_array[url_array.length-1] = url;
+            current_url = url_array.join('/');
+            btitem.attr('href',current_url);
+            imgiten.attr('href',current_url);
             console.log(item);
         })
     }
+
+    var catalogurl = baseUrl+'/dingding/sort.shtml?type=0&&city='+current_city_code+'&&corpid='+localStorage.corpId;
 
     $('.hot_project').dropload({
         scrollArea : window,
@@ -32,7 +37,7 @@ $(function(){
             domClass   : 'dropload-down',
             domRefresh : '<div class="dropload-refresh">↑上拉加载更多</div>',
             domLoad    : '<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">正在加载...</span></div>',
-            domNoData  : '<div class="weui-loadmore weui-loadmore_line weui-loadmore_dot"><span class="weui-loadmore__tips"><span class="no-more">更多维修，请按分类查看哦</span></span></div>'
+            domNoData  : '<div class="weui-loadmore weui-loadmore_line weui-loadmore_dot"><span class="weui-loadmore__tips"><a href="'+catalogurl+'"><span class="no-more">更多维修，请按分类查看哦</span></a></span></div>'
         },
         loadDownFn : function(me){
             page++;
@@ -41,7 +46,7 @@ $(function(){
             if(list){
                 for(var i = 0; i < list.length; i++) {
                     orderUrl = baseUrl + "/ulb/sku/" +list[i].id+"/"+current_city_code+".shtml?corpid="+localStorage.corpId+"&appid="+localStorage.appId;
-                    result += '<li id='+list[i].id+'>' + '<div class="hot_pic">' + '<img src="' + list[i].pic +'" alt="">' + '</div>' +
+                    result += '<li id='+list[i].id+'>' + '<div class="hot_pic">' + '<a href="'+orderUrl+'"> <img src="' + list[i].pic +'" alt="" >' + '</a></div>' +
                             '<div class="hot_price">' +
                             '<p>' + list[i].title + ' </p>' +
                             '<p>&yen;<span> '+ list[i].money +'</span></p>'+

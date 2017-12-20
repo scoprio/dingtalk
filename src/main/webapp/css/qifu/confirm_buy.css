@@ -132,7 +132,6 @@
 .buyer p {
 	margin: 0 .3rem;
 	padding: .15rem .0 .15rem;
-	overflow: hidden;
 }
 
 .product p:nth-child(1),
@@ -257,6 +256,7 @@
 	padding-right: .4rem;
 	background: url(/images/btn_jinru.png) no-repeat right center;
 	background-size: 4%;
+	font-size: 0.28rem;
 }
 
 .buyer p:nth-child(2) span:nth-child(2) {

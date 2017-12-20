@@ -55,22 +55,25 @@ $(function() {
 		$("#last").css("color", "#fb870d");
 	})
 	
-	
-	//监测到190个字时候变色
 	var counter = $("textarea").val().length; //获取文本域的字符串长度
-
 	$(".gptu var").text(counter);
+	//监测到190个字时候变色
+	 var bind_name = 'input';
+	   if (navigator.userAgent.indexOf("MSIE") != -1){
+	     bind_name = 'propertychange';
+	   }
+	   $('#msg').bind(bind_name, function(){
+	        var text = $(this).val();
+	        var counter = text.length;
+	        $(".gptu var").text(counter);  //每次减去字符长度
+	        if(counter >= 190) {
+	            $(".gptu var").css("color", "red")
+	        } else {
+	           $(".gptu var").css("color", "#999")
+	        }
+	   }) 
+	
 
-	$(document).keyup(function() {
-		var text = $("textarea").val();
-		var counter = text.length;
-		$(".gptu var").text(counter); //每次减去字符长度
-		if(counter >= 190) {
-			$(".gptu var").css("color", "red")
-		} else {
-			$(".gptu var").css("color", "#999")
-		}
-	});
 	
 	    function check(){
 	        var grade = document.getElementById("grade").value;

@@ -222,33 +222,25 @@ table tr td:last-child{
     overflow: hidden;
 }
 .hot_project ul li .hot_btn{
-	float: right;
+    float: right;
     width: 1.52rem;
-    height: .56rem;
-    line-height: .56rem;
     background: none;
     color: #ff943e;
     border: 1px solid #ff943e;
     border-radius: .08rem;
-    font-size: .28rem;
     text-align: center;
-    -webkit-appearance: none;
     margin: .74rem 0;
     margin-right: 0.3rem;
+    padding-top: 0.13rem;
+     padding-bottom: 0.128rem;
 }
-/*.hot_btn a{
-	display:inline-block;
-	width: 1.52rem;
-	line-height: .56rem;
-	background: none;
-	color: #ff943e;
-	border: 1px solid #ff943e;
-	border-radius: .08rem;
-	font-size: .28rem;
-	text-align: center;
-	-webkit-appearance: none;
-	margin: .74rem 0;
-}*/
+.hot_btn a{
+	 color: #ff943e;
+     display: block;
+     width: 100%;
+     height: 100%;
+     font-size: .28rem;
+}
 .weui-loadmore{
 	text-align: center;
 }

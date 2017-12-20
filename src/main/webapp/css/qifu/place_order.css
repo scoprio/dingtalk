@@ -150,7 +150,6 @@
 	margin: 0 .3rem;
 	/*border-bottom: 1px solid #E0E0E0;*/
 	min-height: .9rem;
-	overflow: hidden;
     position: relative;
 }
 .contact_way .contact_wayli:after{
@@ -222,7 +221,7 @@
 .agree{
 	padding: 0 .3rem;
 	margin-bottom: .4rem;
-    margin-top: 0.15rem;
+    margin-top: 0.25rem;
     line-height: 0.32rem;
 }
 .agree input[type=checkbox]{
@@ -234,6 +233,13 @@
 }
 .agree a{
 	color: #4b6cfb;
+    display: inline-block;
+    vertical-align: top;
+}
+.agree label{
+    display: inline-block;
+    vertical-align: top;
+    height: 0.4rem;
 }
 .foot {
 	position: fixed;

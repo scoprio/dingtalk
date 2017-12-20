@@ -13,7 +13,7 @@ public class StatueUtil {
     private static Map<String,String> statueMap = new HashMap<>();
 
     private StatueUtil(){
-        statueMap.put("-1","待审核");
+        statueMap.put("-1","企业管理员审核中");
         statueMap.put("1","已下单，系统派单中");
         statueMap.put("2","已接单，请注意接听电话");
         statueMap.put("3","沟通顺利，等待小哥上门");

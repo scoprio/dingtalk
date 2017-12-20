@@ -34,7 +34,7 @@ function layer_tip(form_tip,fun){
 }
 
 function layer_confirm(tip,sure,cancel) {
-    var confirm_box = $('<div class="wrapper"><div class = "confirm_box"><h2>提示</h2><p></p ><div class="btn_box"><button class="sure">确定</button><button class="cancel">我再想想</button></div></div></div>')
+    var confirm_box = $('<div class="wrapper"><div class = "confirm_box"><h2>提示</h2><p></p ><div class="btn_box"><button class="cancel">取消</button><button class="sure">确定</button></div></div></div>')
     $('body').append(confirm_box);
     $('.wrapper').css({
                           "position":"fixed",
@@ -70,13 +70,14 @@ function layer_confirm(tip,sure,cancel) {
     $('.confirm_box p').css({
                                 "padding":"0 20px",
                                 "margin-top":"8px",
-                                "line-height":"22px"
+                                "line-height":"22px",
+                                "font-size":"14px"
                             })
     $('.btn_box').css({
                           "width":"100%",
                           "border-top":"#e8e8e8 solid 1px",
                           "height":"40px",
-                          "margin-top":"14px"
+                          "margin-top":"16px"
                       });
     $('.btn_box button').css({
                                  "width":"50%",
@@ -87,7 +88,7 @@ function layer_confirm(tip,sure,cancel) {
                                  "font-size":"16px",
                                  "outline":"none"
                              })
-    $('.sure').css({
+    $('.cancel').css({
                        "border-right":"#e8e8e8 solid 1px",
                        "color":"#999"
                    })
@@ -114,7 +115,7 @@ function layer_promot(opts) {
       }
     }
     var settings = $.extend({},_default,opts)
-    var promot_box = $('<div class="wrapper"><div class = "promot_box"><h2>'+settings.tip+'</h2><input type="text"  /><div class="btn_box"><button class="sure">确定</button><button class="cancel">我再想想</button></div></div></div>')
+    var promot_box = $('<div class="wrapper"><div class = "promot_box"><h2>'+settings.tip+'</h2><input type="text"  /><div class="btn_box"><button class="cancel">取消</button><button class="sure">确定</button></div></div></div>')
     $('body').append(promot_box);
     $('.wrapper').css({
                           "position":"fixed",
@@ -175,7 +176,7 @@ function layer_promot(opts) {
                                  "font-size":"16px",
                                  "outline":"none"
                              })
-    $('.promot_box .sure').css({
+    $('.promot_box .cancel').css({
                        "border-right":"#e8e8e8 solid 1px",
                        "color":"#999"
                    })

@@ -242,7 +242,7 @@
             function auditNoOrder(orderId,cityCode,uuid,cropid,appid) {
 
                 layer_promot({
-                     'tip':"不通过理由",
+                     'tip':"拒绝原因",
                      'callback':function(val){
                          var skuOrder = {
                              "id":orderId,
