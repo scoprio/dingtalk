@@ -316,22 +316,22 @@
 	box-sizing: border-box;
     position: relative;
 }
-.fleft:after{
+.fright:after{
     content: "";
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
     height: 100%;
     border-right: 1px solid #e0e0e0;
 }
 @media (-webkit-min-device-pixel-ratio: 1.5) {
-    .fleft:after{
+    .fright:after{
         transform: scaleX(0.7)
     }
 }
 
 @media (-webkit-min-device-pixel-ratio: 2) {
-    .fleft:after{
+    .fright:after{
         transform: scaleX(0.5)
     }
 }
@@ -367,6 +367,7 @@
 	width: 45%;
 	box-sizing: border-box;
 	height: 6.4rem;
+    position: relative;
 }
 .fright li{
 	width: 100%;
